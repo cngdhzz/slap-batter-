@@ -28,6 +28,53 @@ MainStroke.Color = Color3.fromRGB(60, 60, 75)
 MainStroke.Thickness = 1.5
 MainStroke.Parent = MainFrame
 
+local function createWindowButton(text, xPos, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 30, 0, 30)
+    btn.Position = UDim2.new(1, xPos, 0, 8)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 75)
+    btn.BackgroundTransparency = 0.5
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(220, 220, 230)
+    btn.TextSize = 18
+    btn.Font = Enum.Font.GothamBold
+    btn.BorderSizePixel = 0
+    btn.Parent = MainFrame
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = btn
+
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundTransparency = 0.1
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundTransparency = 0.5
+        btn.TextColor3 = Color3.fromRGB(220, 220, 230)
+    end)
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+local isMinimized = false
+local originalSize = UDim2.new(0, 700, 0, 460)
+local minimizedSize = UDim2.new(0, 700, 0, 50)
+
+local function toggleMinimize()
+    isMinimized = not isMinimized
+    MainFrame.Size = isMinimized and minimizedSize or originalSize
+    Sidebar.Visible = not isMinimized
+    ContentArea.Visible = not isMinimized
+    SidebarTitle.Position = isMinimized and UDim2.new(0.5, -30, 0, 10) or UDim2.new(0, 0, 0, 10)
+    SidebarTitle.TextXAlignment = isMinimized and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left
+end
+
+local closeBtn = createWindowButton("✕", -45, function()
+    ScreenGui:Destroy()
+end)
+local minBtn = createWindowButton("−", -80, toggleMinimize)
+
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 170, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
