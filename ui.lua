@@ -35,16 +35,18 @@ TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
 local TopLine = Instance.new("Frame")
-TopLine.Size = UDim2.new(1, 0, 0, 2)
-TopLine.Position = UDim2.new(0, 0, 0, 0)
-TopLine.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+TopLine.Size = UDim2.new(0.5, 0, 0, 2)
+TopLine.Position = UDim2.new(0.25, 0, 0, -2)
+TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLine.BackgroundTransparency = 0.7
 TopLine.BorderSizePixel = 0
 TopLine.Parent = TitleBar
 
 local BottomLine = Instance.new("Frame")
-BottomLine.Size = UDim2.new(1, 0, 0, 2)
-BottomLine.Position = UDim2.new(0, 0, 0, 48)
-BottomLine.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
+BottomLine.Position = UDim2.new(0.25, 0, 0, 50)
+BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BottomLine.BackgroundTransparency = 0.7
 BottomLine.BorderSizePixel = 0
 BottomLine.Parent = TitleBar
 
@@ -99,16 +101,10 @@ local function toggleMinimize()
     ContentArea.Visible = not isMinimized
 end
 
-local function reloadUI()
-    ScreenGui:Destroy()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/cngdhzz/slap-batter-/refs/heads/main/ui.lua'))()
-end
-
-local closeBtn = createWindowButton("✕", -45, function()
+local closeBtn = createWindowButton("x", -45, function()
     ScreenGui:Destroy()
 end)
 local minBtn = createWindowButton("—", -80, toggleMinimize)
-local refreshBtn = createWindowButton("↻", -115, reloadUI)
 
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 170, 1, -50)
