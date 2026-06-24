@@ -35,8 +35,13 @@ TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
+local DragHandle = Instance.new("Frame")
+DragHandle.Size = UDim2.new(0.7, 0, 1, 0)
+DragHandle.BackgroundTransparency = 1
+DragHandle.Parent = TitleBar
+
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Slap Battles 大师"
@@ -44,7 +49,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Parent = TitleBar
+TitleLabel.Parent = DragHandle
 
 local TopLine = Instance.new("Frame")
 TopLine.Size = UDim2.new(0.5, 0, 0, 2)
@@ -100,18 +105,11 @@ local function toggleMinimize()
     if animating then return end
     animating = true
 
-    if isMinimized then
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = originalSize})
-        tween:Play()
-        tween.Completed:Wait()
-        isMinimized = false
-    else
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = minimizedSize})
-        tween:Play()
-        tween.Completed:Wait()
-        isMinimized = true
-    end
-
+    local targetSize = isMinimized and originalSize or minimizedSize
+    local tween = TweenService:Create(MainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = targetSize})
+    tween:Play()
+    tween.Completed:Wait()
+    isMinimized = not isMinimized
     animating = false
 end
 
@@ -327,7 +325,7 @@ end
 local Dragging = false
 local DragStart, FrameStart
 
-TitleBar.InputBegan:Connect(function(Input)
+DragHandle.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = Input.Position
@@ -335,7 +333,7 @@ TitleBar.InputBegan:Connect(function(Input)
     end
 end)
 
-TitleBar.InputEnded:Connect(function(Input)
+DragHandle.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
