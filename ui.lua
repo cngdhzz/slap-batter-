@@ -35,6 +35,12 @@ TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
+local DragHandle = Instance.new("Frame")
+DragHandle.Size = UDim2.new(1, 0, 1, 0)
+DragHandle.BackgroundTransparency = 1
+DragHandle.ZIndex = 0
+DragHandle.Parent = TitleBar
+
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.5, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
@@ -44,6 +50,7 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.ZIndex = 1
 TitleLabel.Parent = TitleBar
 
 local TopLine = Instance.new("Frame")
@@ -73,6 +80,7 @@ local function createWindowButton(text, xPos, callback)
     btn.TextSize = 20
     btn.Font = Enum.Font.GothamBold
     btn.BorderSizePixel = 0
+    btn.ZIndex = 2
     btn.Parent = TitleBar
 
     local corner = Instance.new("UICorner")
@@ -319,7 +327,7 @@ end
 local Dragging = false
 local DragStart, FrameStart
 
-TitleBar.InputBegan:Connect(function(Input)
+DragHandle.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = Input.Position
@@ -327,7 +335,7 @@ TitleBar.InputBegan:Connect(function(Input)
     end
 end)
 
-TitleBar.InputEnded:Connect(function(Input)
+DragHandle.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
