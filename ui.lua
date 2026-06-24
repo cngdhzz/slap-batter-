@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
 if Player.PlayerGui:FindFirstChild("MasteryUI") then
     Player.PlayerGui.MasteryUI:Destroy()
@@ -33,22 +34,6 @@ TitleBar.Size = UDim2.new(1, 0, 0, 50)
 TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
-
-local TopLine = Instance.new("Frame")
-TopLine.Size = UDim2.new(0.5, 0, 0, 2)
-TopLine.Position = UDim2.new(0.25, 0, 0, -2)
-TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TopLine.BackgroundTransparency = 0.7
-TopLine.BorderSizePixel = 0
-TopLine.Parent = TitleBar
-
-local BottomLine = Instance.new("Frame")
-BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
-BottomLine.Position = UDim2.new(0.25, 0, 0, 50)
-BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BottomLine.BackgroundTransparency = 0.7
-BottomLine.BorderSizePixel = 0
-BottomLine.Parent = TitleBar
 
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
@@ -90,15 +75,46 @@ local function createWindowButton(text, xPos, callback)
     return btn
 end
 
+local TopLine = Instance.new("Frame")
+TopLine.Size = UDim2.new(0.5, 0, 0, 2)
+TopLine.Position = UDim2.new(0.25, 0, 0, -2)
+TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLine.BackgroundTransparency = 0.7
+TopLine.BorderSizePixel = 0
+TopLine.Parent = MainFrame
+
+local BottomLine = Instance.new("Frame")
+BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
+BottomLine.Position = UDim2.new(0.25, 0, 0, 52)
+BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BottomLine.BackgroundTransparency = 0.7
+BottomLine.BorderSizePixel = 0
+BottomLine.Parent = MainFrame
+
 local isMinimized = false
 local originalSize = UDim2.new(0, 700, 0, 460)
 local minimizedSize = UDim2.new(0, 700, 0, 50)
+local animating = false
 
 local function toggleMinimize()
-    isMinimized = not isMinimized
-    MainFrame.Size = isMinimized and minimizedSize or originalSize
-    Sidebar.Visible = not isMinimized
-    ContentArea.Visible = not isMinimized
+    if animating then return end
+    animating = true
+    if isMinimized then
+        Sidebar.Visible = true
+        ContentArea.Visible = true
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize})
+        tween:Play()
+        tween.Completed:Wait()
+        isMinimized = false
+    else
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize})
+        tween:Play()
+        tween.Completed:Wait()
+        Sidebar.Visible = false
+        ContentArea.Visible = false
+        isMinimized = true
+    end
+    animating = false
 end
 
 local closeBtn = createWindowButton("x", -45, function()
@@ -312,22 +328,34 @@ end
 
 local Dragging = false
 local DragStart, FrameStart
-TitleBar.InputBegan:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+local function startDrag(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
-        DragStart = Input.Position
+        DragStart = input.Position
         FrameStart = MainFrame.Position
     end
-end)
-TitleBar.InputEnded:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+end
+
+local function endDrag(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
-end)
-game:GetService("UserInputService").InputChanged:Connect(function(Input)
-    if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
-        local Delta = Input.Position - DragStart
+end
+
+local function updateDrag(input)
+    if Dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local Delta = input.Position - DragStart
         MainFrame.Position = UDim2.new(FrameStart.X.Scale, FrameStart.X.Offset + Delta.X,
                                       FrameStart.Y.Scale, FrameStart.Y.Offset + Delta.Y)
     end
-end)
+end
+
+TitleBar.InputBegan:Connect(startDrag)
+TitleBar.InputEnded:Connect(endDrag)
+TopLine.InputBegan:Connect(startDrag)
+TopLine.InputEnded:Connect(endDrag)
+BottomLine.InputBegan:Connect(startDrag)
+BottomLine.InputEnded:Connect(endDrag)
+
+game:GetService("UserInputService").InputChanged:Connect(updateDrag)
