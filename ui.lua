@@ -28,18 +28,49 @@ MainStroke.Color = Color3.fromRGB(60, 60, 75)
 MainStroke.Thickness = 1.5
 MainStroke.Parent = MainFrame
 
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 50)
+TitleBar.Position = UDim2.new(0, 0, 0, 0)
+TitleBar.BackgroundTransparency = 1
+TitleBar.Parent = MainFrame
+
+local TopLine = Instance.new("Frame")
+TopLine.Size = UDim2.new(1, 0, 0, 2)
+TopLine.Position = UDim2.new(0, 0, 0, 0)
+TopLine.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+TopLine.BorderSizePixel = 0
+TopLine.Parent = TitleBar
+
+local BottomLine = Instance.new("Frame")
+BottomLine.Size = UDim2.new(1, 0, 0, 2)
+BottomLine.Position = UDim2.new(0, 0, 0, 48)
+BottomLine.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+BottomLine.BorderSizePixel = 0
+BottomLine.Parent = TitleBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(0.6, 0, 1, 0)
+TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Slap Battles 大师"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextSize = 20
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Parent = TitleBar
+
 local function createWindowButton(text, xPos, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 30, 0, 30)
-    btn.Position = UDim2.new(1, xPos, 0, 8)
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 75)
+    btn.Size = UDim2.new(0, 32, 0, 32)
+    btn.Position = UDim2.new(1, xPos, 0.5, -16)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
     btn.BackgroundTransparency = 0.5
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(220, 220, 230)
-    btn.TextSize = 18
+    btn.TextSize = 20
     btn.Font = Enum.Font.GothamBold
     btn.BorderSizePixel = 0
-    btn.Parent = MainFrame
+    btn.Parent = TitleBar
 
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(1, 0)
@@ -66,17 +97,22 @@ local function toggleMinimize()
     MainFrame.Size = isMinimized and minimizedSize or originalSize
     Sidebar.Visible = not isMinimized
     ContentArea.Visible = not isMinimized
-    SidebarTitle.Position = isMinimized and UDim2.new(0.5, -30, 0, 10) or UDim2.new(0, 0, 0, 10)
-    SidebarTitle.TextXAlignment = isMinimized and Enum.TextXAlignment.Center or Enum.TextXAlignment.Left
+end
+
+local function reloadUI()
+    ScreenGui:Destroy()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/cngdhzz/slap-batter-/refs/heads/main/ui.lua'))()
 end
 
 local closeBtn = createWindowButton("✕", -45, function()
     ScreenGui:Destroy()
 end)
-local minBtn = createWindowButton("−", -80, toggleMinimize)
+local minBtn = createWindowButton("—", -80, toggleMinimize)
+local refreshBtn = createWindowButton("↻", -115, reloadUI)
 
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 170, 1, 0)
+Sidebar.Size = UDim2.new(0, 170, 1, -50)
+Sidebar.Position = UDim2.new(0, 0, 0, 50)
 Sidebar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
 Sidebar.BorderSizePixel = 0
 Sidebar.Parent = MainFrame
@@ -126,8 +162,8 @@ for i, Cat in ipairs(Categories) do
 end
 
 local ContentArea = Instance.new("Frame")
-ContentArea.Size = UDim2.new(1, -190, 1, -20)
-ContentArea.Position = UDim2.new(0, 180, 0, 10)
+ContentArea.Size = UDim2.new(1, -190, 1, -70)
+ContentArea.Position = UDim2.new(0, 180, 0, 60)
 ContentArea.BackgroundTransparency = 1
 ContentArea.Parent = MainFrame
 
@@ -280,14 +316,14 @@ end
 
 local Dragging = false
 local DragStart, FrameStart
-MainFrame.InputBegan:Connect(function(Input)
+TitleBar.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = Input.Position
         FrameStart = MainFrame.Position
     end
 end)
-MainFrame.InputEnded:Connect(function(Input)
+TitleBar.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
