@@ -149,7 +149,7 @@ catTitle.Font = Enum.Font.GothamMedium
 catTitle.Parent = categoryFrame
 
 local categories = {
-    {name = "⚔ 战斗", id = "combat"},
+    {name = "⚔ 徽章", id = "combat"},
     {name = "🛡 辅助", id = "assist"},
     {name = "⚙ 设置", id = "settings"},
     {name = "ℹ 关于", id = "about"}
@@ -265,13 +265,8 @@ local function createFunctionPanel(categoryId)
     local functions = {}
 
     if categoryId == "combat" then
-        panelTitle.Text = "⚔ 战斗功能"
-        functions = {
-            {name = "自动攻击", desc = "自动对附近的敌人发动攻击", type = "toggle"},
-            {name = "连击模式", desc = "连续攻击敌人", type = "toggle"},
-            {name = "技能冷却显示", desc = "显示技能冷却时间", type = "toggle"},
-            {name = "自动瞄准", desc = "自动锁定最近的敌人", type = "toggle"},
-        }
+        panelTitle.Text = "⚔ 徽章"
+        functions = {}
     elseif categoryId == "assist" then
         panelTitle.Text = "🛡 辅助功能"
         functions = {
