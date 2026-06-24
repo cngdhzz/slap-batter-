@@ -35,14 +35,8 @@ TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
-local DragHandle = Instance.new("Frame")
-DragHandle.Size = UDim2.new(1, 0, 1, 0)
-DragHandle.BackgroundTransparency = 1
-DragHandle.ZIndex = 0
-DragHandle.Parent = TitleBar
-
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(0.5, 0, 1, 0)
+TitleLabel.Size = UDim2.new(0.35, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Slap Battles 大师"
@@ -50,8 +44,19 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.ZIndex = 1
 TitleLabel.Parent = TitleBar
+
+local DragBar = Instance.new("Frame")
+DragBar.Size = UDim2.new(0.25, 0, 0.5, 0)
+DragBar.Position = UDim2.new(0.4, 0, 0.25, 0)
+DragBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DragBar.BackgroundTransparency = 0.25
+DragBar.BorderSizePixel = 0
+DragBar.Parent = TitleBar
+
+local DragBarCorner = Instance.new("UICorner")
+DragBarCorner.CornerRadius = UDim.new(0, 6)
+DragBarCorner.Parent = DragBar
 
 local TopLine = Instance.new("Frame")
 TopLine.Size = UDim2.new(0.5, 0, 0, 2)
@@ -80,7 +85,6 @@ local function createWindowButton(text, xPos, callback)
     btn.TextSize = 20
     btn.Font = Enum.Font.GothamBold
     btn.BorderSizePixel = 0
-    btn.ZIndex = 2
     btn.Parent = TitleBar
 
     local corner = Instance.new("UICorner")
@@ -115,7 +119,7 @@ local function toggleMinimize()
     animating = false
 end
 
-local closeBtn = createWindowButton("x", -45, function()
+local closeBtn = createWindowButton("X", -45, function()
     ScreenGui:Destroy()
 end)
 local minBtn = createWindowButton("—", -80, toggleMinimize)
@@ -327,7 +331,7 @@ end
 local Dragging = false
 local DragStart, FrameStart
 
-DragHandle.InputBegan:Connect(function(Input)
+DragBar.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = Input.Position
@@ -335,7 +339,7 @@ DragHandle.InputBegan:Connect(function(Input)
     end
 end)
 
-DragHandle.InputEnded:Connect(function(Input)
+DragBar.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
