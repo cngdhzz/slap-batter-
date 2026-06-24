@@ -46,6 +46,22 @@ TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
 
+local TopLine = Instance.new("Frame")
+TopLine.Size = UDim2.new(0.5, 0, 0, 2)
+TopLine.Position = UDim2.new(0.25, 0, 0, -2)
+TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLine.BackgroundTransparency = 0.7
+TopLine.BorderSizePixel = 0
+TopLine.Parent = MainFrame
+
+local BottomLine = Instance.new("Frame")
+BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
+BottomLine.Position = UDim2.new(0.25, 0, 0, 52)
+BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BottomLine.BackgroundTransparency = 0.7
+BottomLine.BorderSizePixel = 0
+BottomLine.Parent = MainFrame
+
 local function createWindowButton(text, xPos, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 32, 0, 32)
@@ -75,30 +91,41 @@ local function createWindowButton(text, xPos, callback)
     return btn
 end
 
-local BottomHandle = Instance.new("Frame")
-BottomHandle.Size = UDim2.new(1, 0, 0, 10)
-BottomHandle.Position = UDim2.new(0, 0, 1, -10)
-BottomHandle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BottomHandle.BackgroundTransparency = 0.6
-BottomHandle.BorderSizePixel = 0
-BottomHandle.Parent = MainFrame
-local BottomHandleCorner = Instance.new("UICorner")
-BottomHandleCorner.CornerRadius = UDim.new(0, 4)
-BottomHandleCorner.Parent = BottomHandle
+local isMinimized = false
+local originalSize = UDim2.new(0, 700, 0, 460)
+local minimizedSize = UDim2.new(0, 700, 0, 50)
 
-local ContentContainer = Instance.new("Frame")
-ContentContainer.Size = UDim2.new(1, 0, 0, 400)
-ContentContainer.Position = UDim2.new(0, 0, 0, 50)
-ContentContainer.BackgroundTransparency = 1
-ContentContainer.ClipsDescendants = true
-ContentContainer.Parent = MainFrame
+local function toggleMinimize()
+    if isMinimized then
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize})
+        tween:Play()
+        tween.Completed:Wait()
+        Sidebar.Visible = true
+        ContentArea.Visible = true
+        BottomLine.Visible = true
+        isMinimized = false
+    else
+        Sidebar.Visible = false
+        ContentArea.Visible = false
+        BottomLine.Visible = false
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize})
+        tween:Play()
+        tween.Completed:Wait()
+        isMinimized = true
+    end
+end
+
+local closeBtn = createWindowButton("x", -45, function()
+    ScreenGui:Destroy()
+end)
+local minBtn = createWindowButton("—", -80, toggleMinimize)
 
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 170, 1, 0)
-Sidebar.Position = UDim2.new(0, 0, 0, 0)
+Sidebar.Size = UDim2.new(0, 170, 1, -50)
+Sidebar.Position = UDim2.new(0, 0, 0, 50)
 Sidebar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
 Sidebar.BorderSizePixel = 0
-Sidebar.Parent = ContentContainer
+Sidebar.Parent = MainFrame
 
 local SidebarTitle = Instance.new("TextLabel")
 SidebarTitle.Size = UDim2.new(1, 0, 0, 60)
@@ -145,10 +172,10 @@ for i, Cat in ipairs(Categories) do
 end
 
 local ContentArea = Instance.new("Frame")
-ContentArea.Size = UDim2.new(1, -190, 1, 0)
-ContentArea.Position = UDim2.new(0, 180, 0, 0)
+ContentArea.Size = UDim2.new(1, -190, 1, -70)
+ContentArea.Position = UDim2.new(0, 180, 0, 60)
 ContentArea.BackgroundTransparency = 1
-ContentArea.Parent = ContentContainer
+ContentArea.Parent = MainFrame
 
 local ContentTitle = Instance.new("TextLabel")
 ContentTitle.Size = UDim2.new(1, 0, 0, 40)
@@ -297,69 +324,27 @@ if #CategoryButtons > 0 then
     CategoryButtons[1].MouseButton1Click:Fire()
 end
 
-local originalMainSize = UDim2.new(0, 700, 0, 460)
-local minimizedMainSize = UDim2.new(0, 700, 0, 50)
-local originalContainerHeight = 400
-local minimizedContainerHeight = 0
-local isMinimized = false
-local animating = false
-
-local function toggleMinimize()
-    if animating then return end
-    animating = true
-    if isMinimized then
-        BottomHandle.Visible = true
-        local tween1 = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalMainSize})
-        local tween2 = TweenService:Create(ContentContainer, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, originalContainerHeight)})
-        tween1:Play()
-        tween2:Play()
-        tween1.Completed:Wait()
-        isMinimized = false
-    else
-        BottomHandle.Visible = false
-        local tween1 = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedMainSize})
-        local tween2 = TweenService:Create(ContentContainer, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, minimizedContainerHeight)})
-        tween1:Play()
-        tween2:Play()
-        tween1.Completed:Wait()
-        isMinimized = true
-    end
-    animating = false
-end
-
-local closeBtn = createWindowButton("x", -45, function()
-    ScreenGui:Destroy()
-end)
-local minBtn = createWindowButton("—", -80, toggleMinimize)
-
 local Dragging = false
 local DragStart, FrameStart
 
-local function startDrag(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+TitleBar.InputBegan:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
-        DragStart = input.Position
+        DragStart = Input.Position
         FrameStart = MainFrame.Position
     end
-end
+end)
 
-local function endDrag(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+TitleBar.InputEnded:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
-end
+end)
 
-local function updateDrag(input)
-    if Dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local Delta = input.Position - DragStart
+game:GetService("UserInputService").InputChanged:Connect(function(Input)
+    if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
+        local Delta = Input.Position - DragStart
         MainFrame.Position = UDim2.new(FrameStart.X.Scale, FrameStart.X.Offset + Delta.X,
                                       FrameStart.Y.Scale, FrameStart.Y.Offset + Delta.Y)
     end
-end
-
-TitleBar.InputBegan:Connect(startDrag)
-TitleBar.InputEnded:Connect(endDrag)
-BottomHandle.InputBegan:Connect(startDrag)
-BottomHandle.InputEnded:Connect(endDrag)
-
-game:GetService("UserInputService").InputChanged:Connect(updateDrag)
+end)
