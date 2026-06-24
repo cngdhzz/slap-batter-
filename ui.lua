@@ -158,6 +158,40 @@ local categories = {
 local categoryButtons = {}
 local selectedCategory = nil
 
+local function selectCategory(categoryId)
+    if selectedCategory == categoryId then
+        return
+    end
+
+    for id, data in pairs(categoryButtons) do
+        local btn = data.button
+        local indicator = data.indicator
+        if id == categoryId then
+            btn.BackgroundTransparency = 0.25
+            btn.TextColor3 = Color3.new(1, 1, 1)
+            indicator.BackgroundTransparency = 0
+            TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+        else
+            btn.BackgroundTransparency = 0.5
+            btn.TextColor3 = Color3.new(0.85, 0.85, 0.85)
+            indicator.BackgroundTransparency = 1
+            TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+        end
+    end
+
+    for id, panel in pairs(functionPanels) do
+        if id == categoryId then
+            panel.Visible = true
+            panel.BackgroundTransparency = 1
+            TweenService:Create(panel, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+        else
+            panel.Visible = false
+        end
+    end
+
+    selectedCategory = categoryId
+end
+
 local function createCategoryButton(data, index)
     local btn = Instance.new("TextButton")
     btn.Name = data.id .. "Btn"
@@ -404,40 +438,6 @@ end
 for _, cat in ipairs(categories) do
     local panel = createFunctionPanel(cat.id)
     functionPanels[cat.id] = panel
-end
-
-local function selectCategory(categoryId)
-    if selectedCategory == categoryId then
-        return
-    end
-
-    for id, data in pairs(categoryButtons) do
-        local btn = data.button
-        local indicator = data.indicator
-        if id == categoryId then
-            btn.BackgroundTransparency = 0.25
-            btn.TextColor3 = Color3.new(1, 1, 1)
-            indicator.BackgroundTransparency = 0
-            TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
-        else
-            btn.BackgroundTransparency = 0.5
-            btn.TextColor3 = Color3.new(0.85, 0.85, 0.85)
-            indicator.BackgroundTransparency = 1
-            TweenService:Create(indicator, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-        end
-    end
-
-    for id, panel in pairs(functionPanels) do
-        if id == categoryId then
-            panel.Visible = true
-            panel.BackgroundTransparency = 1
-            TweenService:Create(panel, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
-        else
-            panel.Visible = false
-        end
-    end
-
-    selectedCategory = categoryId
 end
 
 selectCategory("combat")
