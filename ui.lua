@@ -443,38 +443,34 @@ end
 selectCategory("combat")
 
 local isDragging = false
-local dragStartPos = nil
-local dragOffset = nil
+local dragStart = nil
+local dragConnection = nil
+local releaseConnection = nil
 
-titleBar.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = true
-        dragStartPos = input.Position
-        dragOffset = Vector2.new(
-            mainFrame.AbsolutePosition.X - input.Position.X,
-            mainFrame.AbsolutePosition.Y - input.Position.Y
-        )
-    end
-end)
+titleBar.MouseButton1Down:Connect(function()
+    isDragging = true
+    dragStart = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
+    local mouse = player:GetMouse()
+    local offset = Vector2.new(mouse.X - mainFrame.AbsolutePosition.X, mouse.Y - mainFrame.AbsolutePosition.Y)
 
-titleBar.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = false
-    end
-end)
+    if dragConnection then dragConnection:Disconnect() end
+    if releaseConnection then releaseConnection:Disconnect() end
 
-UserInputService.InputChanged:Connect(function(input)
-    if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local newPos = input.Position + dragOffset
-        local viewportSize = workspace.CurrentCamera.ViewportSize
-        local maxX = viewportSize.X - mainFrame.AbsoluteSize.X
-        local maxY = viewportSize.Y - mainFrame.AbsoluteSize.Y
-        newPos = Vector2.new(
-            math.clamp(newPos.X, 0, maxX),
-            math.clamp(newPos.Y, 0, maxY)
-        )
-        mainFrame.Position = UDim2.new(0, newPos.X, 0, newPos.Y)
-    end
+    dragConnection = mouse.Move:Connect(function()
+        if isDragging then
+            local newX = math.clamp(mouse.X - offset.X, 0, workspace.CurrentCamera.ViewportSize.X - mainFrame.AbsoluteSize.X)
+            local newY = math.clamp(mouse.Y - offset.Y, 0, workspace.CurrentCamera.ViewportSize.Y - mainFrame.AbsoluteSize.Y)
+            mainFrame.Position = UDim2.new(0, newX, 0, newY)
+        end
+    end)
+
+    releaseConnection = UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isDragging = false
+            if dragConnection then dragConnection:Disconnect() end
+            if releaseConnection then releaseConnection:Disconnect() end
+        end
+    end)
 end)
 
 local isMinimized = false
