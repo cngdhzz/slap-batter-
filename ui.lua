@@ -101,8 +101,6 @@ local function toggleMinimize()
     animating = true
 
     if isMinimized then
-        Sidebar.Visible = true
-        ContentArea.Visible = true
         local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = originalSize})
         tween:Play()
         tween.Completed:Wait()
@@ -111,8 +109,6 @@ local function toggleMinimize()
         local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = minimizedSize})
         tween:Play()
         tween.Completed:Wait()
-        Sidebar.Visible = false
-        ContentArea.Visible = false
         isMinimized = true
     end
 
