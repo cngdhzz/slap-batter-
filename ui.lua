@@ -36,7 +36,7 @@ TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(0.35, 0, 1, 0)
+TitleLabel.Size = UDim2.new(0.5, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Slap Battles 大师"
@@ -45,18 +45,6 @@ TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
-
-local DragBar = Instance.new("Frame")
-DragBar.Size = UDim2.new(0.25, 0, 0.5, 0)
-DragBar.Position = UDim2.new(0.4, 0, 0.25, 0)
-DragBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-DragBar.BackgroundTransparency = 0.25
-DragBar.BorderSizePixel = 0
-DragBar.Parent = TitleBar
-
-local DragBarCorner = Instance.new("UICorner")
-DragBarCorner.CornerRadius = UDim.new(0, 6)
-DragBarCorner.Parent = DragBar
 
 local TopLine = Instance.new("Frame")
 TopLine.Size = UDim2.new(0.5, 0, 0, 2)
@@ -331,7 +319,7 @@ end
 local Dragging = false
 local DragStart, FrameStart
 
-DragBar.InputBegan:Connect(function(Input)
+TitleBar.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = Input.Position
@@ -339,7 +327,7 @@ DragBar.InputBegan:Connect(function(Input)
     end
 end)
 
-DragBar.InputEnded:Connect(function(Input)
+TitleBar.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
