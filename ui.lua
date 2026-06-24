@@ -66,6 +66,14 @@ titleLabel.TextYAlignment = Enum.TextYAlignment.Center
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.Parent = titleBar
 
+local dragArea = Instance.new("Frame")
+dragArea.Name = "DragArea"
+dragArea.Size = UDim2.new(1, 0, 1, 0)
+dragArea.Position = UDim2.new(0, 0, 0, 0)
+dragArea.BackgroundTransparency = 1
+dragArea.ZIndex = 0
+dragArea.Parent = titleBar
+
 local minButton = Instance.new("TextButton")
 minButton.Name = "MinButton"
 minButton.Size = UDim2.new(0, 30, 0, 30)
@@ -78,6 +86,7 @@ minButton.TextXAlignment = Enum.TextXAlignment.Center
 minButton.TextYAlignment = Enum.TextYAlignment.Center
 minButton.Font = Enum.Font.GothamMedium
 minButton.BorderSizePixel = 0
+minButton.ZIndex = 2
 minButton.Parent = titleBar
 
 minButton.MouseEnter:Connect(function()
@@ -101,6 +110,7 @@ closeButton.TextXAlignment = Enum.TextXAlignment.Center
 closeButton.TextYAlignment = Enum.TextYAlignment.Center
 closeButton.Font = Enum.Font.GothamMedium
 closeButton.BorderSizePixel = 0
+closeButton.ZIndex = 2
 closeButton.Parent = titleBar
 
 closeButton.MouseEnter:Connect(function()
@@ -443,32 +453,31 @@ end
 selectCategory("combat")
 
 local isDragging = false
-local dragStart = nil
-local dragConnection = nil
-local releaseConnection = nil
+local dragOffset = nil
+local moveConn = nil
+local upConn = nil
 
-titleBar.MouseButton1Down:Connect(function()
+dragArea.MouseButton1Down:Connect(function()
     isDragging = true
-    dragStart = Vector2.new(mainFrame.AbsolutePosition.X, mainFrame.AbsolutePosition.Y)
     local mouse = player:GetMouse()
-    local offset = Vector2.new(mouse.X - mainFrame.AbsolutePosition.X, mouse.Y - mainFrame.AbsolutePosition.Y)
+    dragOffset = Vector2.new(mouse.X - mainFrame.AbsolutePosition.X, mouse.Y - mainFrame.AbsolutePosition.Y)
 
-    if dragConnection then dragConnection:Disconnect() end
-    if releaseConnection then releaseConnection:Disconnect() end
+    if moveConn then moveConn:Disconnect() end
+    if upConn then upConn:Disconnect() end
 
-    dragConnection = mouse.Move:Connect(function()
+    moveConn = mouse.Move:Connect(function()
         if isDragging then
-            local newX = math.clamp(mouse.X - offset.X, 0, workspace.CurrentCamera.ViewportSize.X - mainFrame.AbsoluteSize.X)
-            local newY = math.clamp(mouse.Y - offset.Y, 0, workspace.CurrentCamera.ViewportSize.Y - mainFrame.AbsoluteSize.Y)
+            local newX = math.clamp(mouse.X - dragOffset.X, 0, workspace.CurrentCamera.ViewportSize.X - mainFrame.AbsoluteSize.X)
+            local newY = math.clamp(mouse.Y - dragOffset.Y, 0, workspace.CurrentCamera.ViewportSize.Y - mainFrame.AbsoluteSize.Y)
             mainFrame.Position = UDim2.new(0, newX, 0, newY)
         end
     end)
 
-    releaseConnection = UserInputService.InputEnded:Connect(function(input)
+    upConn = UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             isDragging = false
-            if dragConnection then dragConnection:Disconnect() end
-            if releaseConnection then releaseConnection:Disconnect() end
+            if moveConn then moveConn:Disconnect() end
+            if upConn then upConn:Disconnect() end
         end
     end)
 end)
