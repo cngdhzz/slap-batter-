@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 if Player.PlayerGui:FindFirstChild("MasteryUI") then
     Player.PlayerGui.MasteryUI:Destroy()
@@ -35,12 +36,6 @@ TitleBar.Position = UDim2.new(0, 0, 0, 0)
 TitleBar.BackgroundTransparency = 1
 TitleBar.Parent = MainFrame
 
-local DragHandle = Instance.new("Frame")
-DragHandle.Size = UDim2.new(1, 0, 1, 0)
-DragHandle.BackgroundTransparency = 1
-DragHandle.ZIndex = 0
-DragHandle.Parent = TitleBar
-
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.5, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 15, 0, 0)
@@ -50,24 +45,15 @@ TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 20
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.ZIndex = 1
 TitleLabel.Parent = TitleBar
 
-local TopLine = Instance.new("Frame")
-TopLine.Size = UDim2.new(0.5, 0, 0, 2)
-TopLine.Position = UDim2.new(0.25, 0, 0, -2)
-TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TopLine.BackgroundTransparency = 0.7
-TopLine.BorderSizePixel = 0
-TopLine.Parent = MainFrame
-
-local BottomLine = Instance.new("Frame")
-BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
-BottomLine.Position = UDim2.new(0.25, 0, 0, 52)
-BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BottomLine.BackgroundTransparency = 0.7
-BottomLine.BorderSizePixel = 0
-BottomLine.Parent = MainFrame
+local DragButton = Instance.new("TextButton")
+DragButton.Size = UDim2.new(0.7, 0, 1, 0)
+DragButton.Position = UDim2.new(0, 0, 0, 0)
+DragButton.BackgroundTransparency = 1
+DragButton.Text = ""
+DragButton.AutoButtonColor = false
+DragButton.Parent = TitleBar
 
 local function createWindowButton(text, xPos, callback)
     local btn = Instance.new("TextButton")
@@ -80,7 +66,6 @@ local function createWindowButton(text, xPos, callback)
     btn.TextSize = 20
     btn.Font = Enum.Font.GothamBold
     btn.BorderSizePixel = 0
-    btn.ZIndex = 2
     btn.Parent = TitleBar
 
     local corner = Instance.new("UICorner")
@@ -119,6 +104,22 @@ local closeBtn = createWindowButton("X", -45, function()
     ScreenGui:Destroy()
 end)
 local minBtn = createWindowButton("—", -80, toggleMinimize)
+
+local TopLine = Instance.new("Frame")
+TopLine.Size = UDim2.new(0.5, 0, 0, 2)
+TopLine.Position = UDim2.new(0.25, 0, 0, -2)
+TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLine.BackgroundTransparency = 0.7
+TopLine.BorderSizePixel = 0
+TopLine.Parent = MainFrame
+
+local BottomLine = Instance.new("Frame")
+BottomLine.Size = UDim2.new(0.5, 0, 0, 2)
+BottomLine.Position = UDim2.new(0.25, 0, 0, 52)
+BottomLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BottomLine.BackgroundTransparency = 0.7
+BottomLine.BorderSizePixel = 0
+BottomLine.Parent = MainFrame
 
 local Sidebar = Instance.new("Frame")
 Sidebar.Size = UDim2.new(0, 170, 1, -50)
@@ -327,23 +328,23 @@ end
 local Dragging = false
 local DragStart, FrameStart
 
-DragHandle.InputBegan:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-        Dragging = true
-        DragStart = Input.Position
-        FrameStart = MainFrame.Position
-    end
+DragButton.MouseButton1Down:Connect(function(input)
+    Dragging = true
+    DragStart = input.Position
+    FrameStart = MainFrame.Position
 end)
 
-DragHandle.InputEnded:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-        Dragging = false
-    end
+DragButton.MouseButton1Up:Connect(function()
+    Dragging = false
 end)
 
-game:GetService("UserInputService").InputChanged:Connect(function(Input)
-    if Dragging and Input.UserInputType == Enum.UserInputType.MouseMovement then
-        local Delta = Input.Position - DragStart
+DragButton.MouseLeave:Connect(function()
+    Dragging = false
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if Dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local Delta = input.Position - DragStart
         MainFrame.Position = UDim2.new(FrameStart.X.Scale, FrameStart.X.Offset + Delta.X,
                                       FrameStart.Y.Scale, FrameStart.Y.Offset + Delta.Y)
     end
