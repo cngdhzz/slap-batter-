@@ -91,41 +91,18 @@ local function createWindowButton(text, xPos, callback)
     return btn
 end
 
-local isMinimized = false
-local originalSize = UDim2.new(0, 700, 0, 460)
-local minimizedSize = UDim2.new(0, 700, 0, 50)
-
-local function toggleMinimize()
-    if isMinimized then
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize})
-        tween:Play()
-        tween.Completed:Wait()
-        Sidebar.Visible = true
-        ContentArea.Visible = true
-        BottomLine.Visible = true
-        isMinimized = false
-    else
-        Sidebar.Visible = false
-        ContentArea.Visible = false
-        BottomLine.Visible = false
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize})
-        tween:Play()
-        tween.Completed:Wait()
-        isMinimized = true
-    end
-end
-
-local closeBtn = createWindowButton("x", -45, function()
-    ScreenGui:Destroy()
-end)
-local minBtn = createWindowButton("—", -80, toggleMinimize)
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Size = UDim2.new(1, 0, 0, 410)
+ContentContainer.Position = UDim2.new(0, 0, 0, 50)
+ContentContainer.BackgroundTransparency = 1
+ContentContainer.ClipsDescendants = true
+ContentContainer.Parent = MainFrame
 
 local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 170, 1, -50)
-Sidebar.Position = UDim2.new(0, 0, 0, 50)
+Sidebar.Size = UDim2.new(0, 170, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
 Sidebar.BorderSizePixel = 0
-Sidebar.Parent = MainFrame
+Sidebar.Parent = ContentContainer
 
 local SidebarTitle = Instance.new("TextLabel")
 SidebarTitle.Size = UDim2.new(1, 0, 0, 60)
@@ -172,10 +149,10 @@ for i, Cat in ipairs(Categories) do
 end
 
 local ContentArea = Instance.new("Frame")
-ContentArea.Size = UDim2.new(1, -190, 1, -70)
-ContentArea.Position = UDim2.new(0, 180, 0, 60)
+ContentArea.Size = UDim2.new(1, -190, 1, 0)
+ContentArea.Position = UDim2.new(0, 180, 0, 0)
 ContentArea.BackgroundTransparency = 1
-ContentArea.Parent = MainFrame
+ContentArea.Parent = ContentContainer
 
 local ContentTitle = Instance.new("TextLabel")
 ContentTitle.Size = UDim2.new(1, 0, 0, 40)
@@ -323,6 +300,35 @@ end
 if #CategoryButtons > 0 then
     CategoryButtons[1].MouseButton1Click:Fire()
 end
+
+local isMinimized = false
+local originalMainSize = UDim2.new(0, 700, 0, 460)
+local minimizedMainSize = UDim2.new(0, 700, 0, 50)
+local originalContainerSize = UDim2.new(1, 0, 0, 410)
+local minimizedContainerSize = UDim2.new(1, 0, 0, 0)
+
+local function toggleMinimize()
+    if isMinimized then
+        local t1 = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalMainSize})
+        local t2 = TweenService:Create(ContentContainer, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalContainerSize})
+        t1:Play()
+        t2:Play()
+        t1.Completed:Wait()
+        isMinimized = false
+    else
+        local t1 = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedMainSize})
+        local t2 = TweenService:Create(ContentContainer, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedContainerSize})
+        t1:Play()
+        t2:Play()
+        t1.Completed:Wait()
+        isMinimized = true
+    end
+end
+
+local closeBtn = createWindowButton("x", -45, function()
+    ScreenGui:Destroy()
+end)
+local minBtn = createWindowButton("—", -80, toggleMinimize)
 
 local Dragging = false
 local DragStart, FrameStart
