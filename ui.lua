@@ -92,25 +92,31 @@ local function createWindowButton(text, xPos, callback)
 end
 
 local isMinimized = false
+local animating = false
 local originalSize = UDim2.new(0, 700, 0, 460)
 local minimizedSize = UDim2.new(0, 700, 0, 50)
 
 local function toggleMinimize()
+    if animating then return end
+    animating = true
+
     if isMinimized then
         Sidebar.Visible = true
         ContentArea.Visible = true
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize})
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = originalSize})
         tween:Play()
         tween.Completed:Wait()
         isMinimized = false
     else
-        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize})
+        local tween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = minimizedSize})
         tween:Play()
         tween.Completed:Wait()
         Sidebar.Visible = false
         ContentArea.Visible = false
         isMinimized = true
     end
+
+    animating = false
 end
 
 local closeBtn = createWindowButton("x", -45, function()
